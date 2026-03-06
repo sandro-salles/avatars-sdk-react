@@ -252,7 +252,7 @@ export default function Home() {
 
       <footer className="footer">
         <a
-          href="https://docs.runwayml.com/avatars"
+          href="https://docs.dev.runwayml.com/characters"
           target="_blank"
           rel="noopener noreferrer"
         >
