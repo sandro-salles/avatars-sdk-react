@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-03-11
+
 ### Added
 
 - `audio` and `video` props on `AvatarCall` to control whether mic/camera are requested on connect
