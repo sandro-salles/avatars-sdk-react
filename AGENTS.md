@@ -95,3 +95,10 @@ bun test           # Run tests
 | Avatar hook | `src/hooks/useAvatar.ts` |
 | Media hook | `src/hooks/useLocalMedia.ts` |
 | Server example | `examples/nextjs/app/api/avatar/connect/route.ts` |
+
+## Learned Workspace Facts
+
+- Release flow follows `CONTRIBUTING.md` — bump version, update changelog, commit, push, then `gh release create` triggers the NPM publish workflow
+- `consumeSession` API converts `sessionId + sessionKey` → WebRTC credentials (`serverUrl`, `token`, `roomName`); this step is handled client-side by the SDK
+- Primary quickstart reference is `examples/nextjs/` (API routes, more universally understood than server actions)
+- Documentation lives on an external docs website — `docs/` and `skills/` folders were intentionally removed from the repo
