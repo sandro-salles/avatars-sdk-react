@@ -198,7 +198,7 @@ Style connection states with CSS:
 
 ## Webcam & Screen Sharing
 
-The avatar can see your webcam feed and screen share, enabling visual interactions — show a plant for identification, [hold up a Pokémon card for trivia](https://x.com/technofantasyy/status/2031124673552097412), get [real-time coaching while you play a game](https://x.com/iamneubert/status/2031160102452081046), walk through a presentation, or ask for feedback on a design you're working on.
+The avatar can see your webcam feed or screen share, enabling visual interactions — show a plant for identification, [hold up a Pokémon card for trivia](https://x.com/technofantasyy/status/2031124673552097412), get [real-time coaching while you play a game](https://x.com/iamneubert/status/2031160102452081046), walk through a presentation, or ask for feedback on a design you're working on.
 
 **Compatibility:** Webcam and screen sharing are supported by all preset avatars and custom avatars that use a preset voice. Custom avatars with a custom voice do not support webcam or screen sharing.
 
