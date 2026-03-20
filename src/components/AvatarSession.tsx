@@ -22,7 +22,7 @@ import {
   useRoomContext,
 } from '@livekit/components-react';
 import type { RoomOptions } from 'livekit-client';
-import { ConnectionState, Track } from 'livekit-client';
+import { ConnectionState, RoomEvent, Track } from 'livekit-client';
 import {
   createContext,
   type ReactNode,
@@ -35,8 +35,11 @@ import {
 import type {
   AvatarSessionContextValue,
   AvatarSessionProps,
+  ClientEvent,
+  ClientEventHandler,
   SessionState,
 } from '../types';
+import { parseClientEvent } from '../utils/parseClientEvent';
 
 /**
  * Check if a media device of the given kind is available
@@ -144,16 +147,17 @@ const AvatarSessionContext = createContext<AvatarSessionContextValue | null>(
  * Establishes a WebRTC connection and provides session state to children.
  * This is a headless component that renders minimal DOM.
  */
-export function AvatarSession({
+export function AvatarSession<E extends ClientEvent = ClientEvent>({
   credentials,
   children,
   audio: requestAudio = true,
   video: requestVideo = true,
   onEnd,
   onError,
+  onClientEvent,
   initialScreenStream,
   __unstable_roomOptions,
-}: AvatarSessionProps) {
+}: AvatarSessionProps<E>) {
   const errorRef = useRef<Error | null>(null);
 
   const deviceAvailability = useDeviceAvailability(requestAudio, requestVideo);
@@ -187,6 +191,7 @@ export function AvatarSession({
       <AvatarSessionContextInner
         sessionId={credentials.sessionId}
         onEnd={onEnd}
+        onClientEvent={onClientEvent as ClientEventHandler | undefined}
         errorRef={errorRef}
         initialScreenStream={initialScreenStream}
       >
@@ -203,12 +208,14 @@ export function AvatarSession({
 function AvatarSessionContextInner({
   sessionId,
   onEnd,
+  onClientEvent,
   errorRef,
   initialScreenStream,
   children,
 }: {
   sessionId: string;
   onEnd?: () => void;
+  onClientEvent?: ClientEventHandler;
   errorRef: React.RefObject<Error | null>;
   initialScreenStream?: MediaStream;
   children: ReactNode;
@@ -217,6 +224,8 @@ function AvatarSessionContextInner({
   const connectionState = useConnectionState();
   const onEndRef = useRef(onEnd);
   onEndRef.current = onEnd;
+  const onClientEventRef = useRef(onClientEvent);
+  onClientEventRef.current = onClientEvent;
 
   const publishedRef = useRef(false);
 
@@ -242,6 +251,20 @@ function AvatarSessionContextInner({
       initialScreenStream.getTracks().forEach(t => { t.stop(); });
     };
   }, [connectionState, initialScreenStream, room]);
+
+  useEffect(() => {
+    function handleDataReceived(payload: Uint8Array) {
+      const event = parseClientEvent(payload);
+      if (event) {
+        onClientEventRef.current?.(event);
+      }
+    }
+
+    room.on(RoomEvent.DataReceived, handleDataReceived);
+    return () => {
+      room.off(RoomEvent.DataReceived, handleDataReceived);
+    };
+  }, [room]);
 
   const end = useCallback(async () => {
     try {
