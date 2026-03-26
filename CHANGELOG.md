@@ -7,19 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.10.0-beta.1] - 2026-03-25
-
-### Fixed
-
-- Fixed sessions failing to connect when another app (e.g. Zoom) holds the mic/camera — media acquisition is now decoupled from the WebRTC connection so the session always starts
-
-### Added
-
-- `micError` / `cameraError` on `useLocalMedia` and `ControlBarState` — exposes the device error when `getUserMedia` fails
-- `retryMic()` / `retryCamera()` on `useLocalMedia` and `ControlBarState` — re-attempt device acquisition after freeing the device
-- `MediaDeviceErrors` type export
-
-## [0.10.0-beta.0] - 2026-03-18
+## [0.10.0] - 2026-03-26
 
 ### Added
 
@@ -29,7 +17,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `clientTool` helper — define a single client tool, compose into arrays, derive event types with `ClientEventsFrom`
 - `ClientEvent`, `ClientEventsFrom`, `ClientToolDef` types exported from `@runwayml/avatars-react/api` for server-safe imports
 - `onClientEvent` prop on `AvatarCall` and `AvatarSession` for prop-based event handling
-- Trivia game example (`examples/nextjs-client-events/`) demonstrating client events in action
+- `micError` / `cameraError` on `useLocalMedia` and `ControlBarState` — exposes the device error when `getUserMedia` fails
+- `retryMic()` / `retryCamera()` on `useLocalMedia` and `ControlBarState` — re-attempt device acquisition after freeing the device
+- `MediaDeviceErrors` type export
+- Screen share toggle in `ControlBar` via `showScreenShare` prop — sends screen to the avatar without rendering the video in the UI
+- Focus preservation when screen sharing — browser stays on the app tab instead of switching to the shared tab (Chrome 109+)
+- Surface switching — users can change what they're sharing without stopping/restarting the share
+- CSS custom properties `--avatar-control-bg-off` and `--avatar-control-color-off` for customizing toggled-off button appearance
+
+### Fixed
+
+- Fixed sessions failing to connect when another app (e.g. Zoom) holds the mic/camera — media acquisition is now decoupled from the WebRTC connection so the session always starts
+
+### Changed
+
+- Control button toggled-off state now uses a subtle dimmed style instead of red — less alarming for normal states like muted mic or camera off
 
 ## [0.9.0] - 2026-03-13
 
