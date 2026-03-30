@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-03-30
+
+### Added
+
+- Screen sharing indicator bar in `ControlBar` — shows "You're sharing your screen" with a quick Stop action when screen sharing is active
+- Screen share active button now uses solid white background with dark icon (matching developer portal design)
+
+### Fixed
+
+- Production builds now start from a clean `dist/` directory, and the dev script seeds `dist/styles.css` before watch mode starts
+
 ## [0.10.0] - 2026-03-26
 
 ### Added

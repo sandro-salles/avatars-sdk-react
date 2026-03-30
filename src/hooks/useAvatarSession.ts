@@ -32,11 +32,31 @@ import type { AvatarSessionContextValue } from '../types';
  */
 export type UseAvatarSessionReturn =
   | { state: 'idle'; sessionId: string; error: null; end: () => Promise<void> }
-  | { state: 'connecting'; sessionId: string; error: null; end: () => Promise<void> }
-  | { state: 'active'; sessionId: string; error: null; end: () => Promise<void> }
-  | { state: 'ending'; sessionId: string; error: null; end: () => Promise<void> }
+  | {
+      state: 'connecting';
+      sessionId: string;
+      error: null;
+      end: () => Promise<void>;
+    }
+  | {
+      state: 'active';
+      sessionId: string;
+      error: null;
+      end: () => Promise<void>;
+    }
+  | {
+      state: 'ending';
+      sessionId: string;
+      error: null;
+      end: () => Promise<void>;
+    }
   | { state: 'ended'; sessionId: string; error: null; end: () => Promise<void> }
-  | { state: 'error'; sessionId: string; error: Error; end: () => Promise<void> };
+  | {
+      state: 'error';
+      sessionId: string;
+      error: Error;
+      end: () => Promise<void>;
+    };
 
 /**
  * Hook to access the current avatar session state

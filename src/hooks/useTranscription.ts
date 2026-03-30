@@ -1,8 +1,8 @@
 'use client';
 
 import { useRoomContext } from '@livekit/components-react';
-import { RoomEvent } from 'livekit-client';
 import type { Participant, TranscriptionSegment } from 'livekit-client';
+import { RoomEvent } from 'livekit-client';
 import { useEffect, useRef } from 'react';
 import type { TranscriptionHandler } from '../types';
 

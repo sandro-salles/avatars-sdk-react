@@ -46,11 +46,12 @@ import '@runwayml/avatars-react/styles.css';
 The styles use CSS custom properties for easy customization:
 
 ```css
-:root {
-  --avatar-bg: #a78bfa;           /* Video background color */
-  --avatar-radius: 16px;          /* Container border radius */
-  --avatar-control-size: 48px;    /* Control button size */
-  --avatar-end-call-bg: #ef4444;  /* End call button color */
+[data-avatar-call] {
+  --avatar-bg-connecting: #8b5cf6;         /* Video background color */
+  --avatar-radius: 16px;                   /* Container border radius */
+  --avatar-control-size: 40px;             /* Control button size */
+  --avatar-end-call-bg: #ff552f;           /* End call button color */
+  --avatar-screen-share-active-bg: #fff;   /* Active share button background */
 }
 ```
 
@@ -237,6 +238,8 @@ Enable the screen share button by passing `showScreenShare` to `ControlBar`, and
   <ControlBar showScreenShare />
 </AvatarCall>
 ```
+
+While sharing is active, the default `ControlBar` UI shows a sharing banner with a quick `Stop` action.
 
 You can also start screen sharing automatically by passing a pre-captured stream via `initialScreenStream`. This is useful when you want to prompt the user for screen share permission before the session connects:
 

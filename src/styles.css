@@ -19,13 +19,29 @@
   /* Customizable variables */
   --avatar-bg-connecting: #1a1a1a;
   --avatar-radius: 16px;
-  --avatar-control-bg: rgba(255, 255, 255, 0.1);
-  --avatar-control-bg-hover: rgba(255, 255, 255, 0.2);
+  --avatar-control-bg: rgba(255, 255, 255, 0.08);
+  --avatar-control-bg-hover: rgba(255, 255, 255, 0.15);
   --avatar-control-bg-off: rgba(255, 255, 255, 0.05);
   --avatar-control-color-off: rgba(255, 255, 255, 0.5);
-  --avatar-control-size: 48px;
-  --avatar-end-call-bg: #ef4444;
-  --avatar-end-call-bg-hover: #dc2626;
+  --avatar-control-size: 40px;
+  --avatar-end-call-bg: #ff552f;
+  --avatar-end-call-bg-hover: #e64a28;
+  --avatar-screen-share-indicator-bg: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0.5)
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.1)
+    );
+  --avatar-screen-share-indicator-border: rgba(255, 255, 255, 0.06);
+  --avatar-screen-share-stop-color: #ff552f;
+  --avatar-screen-share-stop-bg-hover: rgba(255, 85, 47, 0.1);
+  --avatar-screen-share-active-bg: #ffffff;
+  --avatar-screen-share-active-color: #000000;
+  --avatar-screen-share-active-bg-hover: rgba(255, 255, 255, 0.85);
   --avatar-text-color: #ffffff;
   --avatar-text-secondary: rgba(255, 255, 255, 0.7);
   --avatar-pip-size: 120px;
@@ -91,8 +107,9 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 24px;
+  padding: 16px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 12px;
@@ -102,7 +119,87 @@
 
 @media (max-width: 480px) {
   [data-avatar-control-bar] {
-    padding: 16px;
+    padding: 12px;
+    gap: 8px;
+  }
+}
+
+/* Screen share indicator */
+[data-avatar-share-indicator] {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  max-width: calc(100% - 32px);
+  border: 1px solid var(--avatar-screen-share-indicator-border);
+  border-radius: 999px;
+  background: var(--avatar-screen-share-indicator-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: var(--avatar-text-color);
+}
+
+[data-avatar-share-label] {
+  font-size: 14px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+[data-avatar-share-actions] {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+[data-avatar-share-action] {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-size: 14px;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+[data-avatar-share-action="stop"] {
+  color: var(--avatar-screen-share-stop-color);
+}
+
+[data-avatar-share-action="stop"]:hover {
+  background: var(--avatar-screen-share-stop-bg-hover);
+}
+
+[data-avatar-share-action]:focus-visible {
+  outline: 2px solid var(--avatar-text-color);
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  [data-avatar-share-indicator] {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 10px;
+    max-width: calc(100% - 24px);
+  }
+
+  [data-avatar-share-label] {
+    white-space: normal;
+    text-align: center;
+  }
+}
+
+/* Controls row */
+[data-avatar-controls] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+@media (max-width: 480px) {
+  [data-avatar-controls] {
     gap: 8px;
   }
 }
@@ -115,22 +212,27 @@
   width: var(--avatar-control-size);
   height: var(--avatar-control-size);
   border-radius: 50%;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.03);
   background: var(--avatar-control-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   color: var(--avatar-text-color);
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 @media (max-width: 480px) {
   [data-avatar-control] {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
   }
 
   [data-avatar-control] svg {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
   }
 }
 
@@ -153,10 +255,14 @@
   background: var(--avatar-control-bg);
 }
 
-/* Screen share active */
+/* Screen share active — solid white with dark icon */
 [data-avatar-control="screen-share"][data-avatar-enabled="true"] {
-  background: rgba(59, 130, 246, 0.3);
-  color: #93c5fd;
+  background: var(--avatar-screen-share-active-bg);
+  color: var(--avatar-screen-share-active-color);
+}
+
+[data-avatar-control="screen-share"][data-avatar-enabled="true"]:hover {
+  background: var(--avatar-screen-share-active-bg-hover);
 }
 
 /* End call button */

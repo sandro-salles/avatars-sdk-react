@@ -1,6 +1,10 @@
 'use client';
 
-import type { ComponentPropsWithoutRef, ReactNode } from 'react';
+import {
+  type ComponentPropsWithoutRef,
+  type ReactNode,
+  useCallback,
+} from 'react';
 import { useAvatarSession } from '../hooks/useAvatarSession';
 import { useLocalMedia } from '../hooks/useLocalMedia';
 
@@ -52,6 +56,12 @@ export function ControlBar({
 
   const isActive = session.state === 'active';
 
+  const handleStopScreenShare = useCallback(() => {
+    if (!isScreenShareEnabled) return;
+
+    toggleScreenShare();
+  }, [isScreenShareEnabled, toggleScreenShare]);
+
   const state: ControlBarState = {
     isMicEnabled,
     isCameraEnabled,
@@ -77,52 +87,68 @@ export function ControlBar({
 
   return (
     <div {...props} data-avatar-control-bar="" data-avatar-active={isActive}>
-      {showMicrophone && (
-        <button
-          type="button"
-          onClick={toggleMic}
-          data-avatar-control="microphone"
-          data-avatar-enabled={isMicEnabled}
-          aria-label={isMicEnabled ? 'Mute microphone' : 'Unmute microphone'}
-        >
-          {microphoneIcon}
-        </button>
+      {showScreenShare && isScreenShareEnabled && (
+        <div data-avatar-share-indicator="" aria-live="polite">
+          <span data-avatar-share-label="">You're sharing your screen</span>
+          <div data-avatar-share-actions="">
+            <button
+              type="button"
+              onClick={handleStopScreenShare}
+              data-avatar-share-action="stop"
+            >
+              Stop
+            </button>
+          </div>
+        </div>
       )}
-      {showCamera && (
-        <button
-          type="button"
-          onClick={toggleCamera}
-          data-avatar-control="camera"
-          data-avatar-enabled={isCameraEnabled}
-          aria-label={isCameraEnabled ? 'Turn off camera' : 'Turn on camera'}
-        >
-          {cameraIcon}
-        </button>
-      )}
-      {showScreenShare && (
-        <button
-          type="button"
-          onClick={toggleScreenShare}
-          data-avatar-control="screen-share"
-          data-avatar-enabled={isScreenShareEnabled}
-          aria-label={
-            isScreenShareEnabled ? 'Stop sharing screen' : 'Share screen'
-          }
-        >
-          {screenShareIcon}
-        </button>
-      )}
-      {showEndCall && (
-        <button
-          type="button"
-          onClick={session.end}
-          data-avatar-control="end-call"
-          data-avatar-enabled={true}
-          aria-label="End call"
-        >
-          {phoneIcon}
-        </button>
-      )}
+      <div data-avatar-controls="">
+        {showMicrophone && (
+          <button
+            type="button"
+            onClick={toggleMic}
+            data-avatar-control="microphone"
+            data-avatar-enabled={isMicEnabled}
+            aria-label={isMicEnabled ? 'Mute microphone' : 'Unmute microphone'}
+          >
+            {microphoneIcon}
+          </button>
+        )}
+        {showCamera && (
+          <button
+            type="button"
+            onClick={toggleCamera}
+            data-avatar-control="camera"
+            data-avatar-enabled={isCameraEnabled}
+            aria-label={isCameraEnabled ? 'Turn off camera' : 'Turn on camera'}
+          >
+            {cameraIcon}
+          </button>
+        )}
+        {showScreenShare && (
+          <button
+            type="button"
+            onClick={toggleScreenShare}
+            data-avatar-control="screen-share"
+            data-avatar-enabled={isScreenShareEnabled}
+            aria-label={
+              isScreenShareEnabled ? 'Stop sharing screen' : 'Share screen'
+            }
+          >
+            {screenShareIcon}
+          </button>
+        )}
+        {showEndCall && (
+          <button
+            type="button"
+            onClick={session.end}
+            data-avatar-control="end-call"
+            data-avatar-enabled={true}
+            aria-label="End call"
+          >
+            {phoneIcon}
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -130,8 +156,8 @@ export function ControlBar({
 // Lucide icons (https://lucide.dev) - MIT License
 const microphoneIcon = (
   <svg
-    width="20"
-    height="20"
+    width="16"
+    height="16"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -148,8 +174,8 @@ const microphoneIcon = (
 
 const cameraIcon = (
   <svg
-    width="20"
-    height="20"
+    width="16"
+    height="16"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -165,8 +191,8 @@ const cameraIcon = (
 
 const screenShareIcon = (
   <svg
-    width="20"
-    height="20"
+    width="16"
+    height="16"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -175,16 +201,18 @@ const screenShareIcon = (
     strokeLinejoin="round"
     aria-hidden="true"
   >
-    <rect width="20" height="14" x="2" y="3" rx="2" />
-    <line x1="8" x2="16" y1="21" y2="21" />
-    <line x1="12" x2="12" y1="17" y2="21" />
+    <path d="M13 3H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-3" />
+    <path d="M8 21h8" />
+    <path d="M12 17v4" />
+    <path d="m17 8 5-5" />
+    <path d="M17 3h5v5" />
   </svg>
 );
 
 const phoneIcon = (
   <svg
-    width="20"
-    height="20"
+    width="16"
+    height="16"
     viewBox="8 14 24 12"
     fill="currentColor"
     aria-hidden="true"

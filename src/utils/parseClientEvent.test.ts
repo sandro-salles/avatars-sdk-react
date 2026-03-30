@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'bun:test';
+import { describe, expect, it } from 'bun:test';
 import { parseClientEvent } from './parseClientEvent';
 
 function encode(obj: unknown): Uint8Array {
@@ -8,9 +8,17 @@ function encode(obj: unknown): Uint8Array {
 describe('parseClientEvent', () => {
   it('parses a valid client event', () => {
     const result = parseClientEvent(
-      encode({ type: 'client_event', tool: 'show_caption', args: { text: 'Hello' } }),
+      encode({
+        type: 'client_event',
+        tool: 'show_caption',
+        args: { text: 'Hello' },
+      }),
     );
-    expect(result).toEqual({ type: 'client_event', tool: 'show_caption', args: { text: 'Hello' } });
+    expect(result).toEqual({
+      type: 'client_event',
+      tool: 'show_caption',
+      args: { text: 'Hello' },
+    });
   });
 
   it('returns null for non-client-event type', () => {
@@ -33,23 +41,37 @@ describe('parseClientEvent', () => {
 
   it('returns null when args is a primitive', () => {
     expect(
-      parseClientEvent(encode({ type: 'client_event', tool: 'x', args: 'string' })),
+      parseClientEvent(
+        encode({ type: 'client_event', tool: 'x', args: 'string' }),
+      ),
     ).toBeNull();
   });
 
   it('filters out server ack messages', () => {
     expect(
       parseClientEvent(
-        encode({ type: 'client_event', tool: 'show_caption', args: { status: 'event_sent' } }),
+        encode({
+          type: 'client_event',
+          tool: 'show_caption',
+          args: { status: 'event_sent' },
+        }),
       ),
     ).toBeNull();
   });
 
   it('allows args that contain status with a non-ack value', () => {
     const result = parseClientEvent(
-      encode({ type: 'client_event', tool: 'update', args: { status: 'active' } }),
+      encode({
+        type: 'client_event',
+        tool: 'update',
+        args: { status: 'active' },
+      }),
     );
-    expect(result).toEqual({ type: 'client_event', tool: 'update', args: { status: 'active' } });
+    expect(result).toEqual({
+      type: 'client_event',
+      tool: 'update',
+      args: { status: 'active' },
+    });
   });
 
   it('returns null for invalid JSON', () => {
@@ -64,6 +86,8 @@ describe('parseClientEvent', () => {
   it('returns null when message is missing required fields', () => {
     expect(parseClientEvent(encode({}))).toBeNull();
     expect(parseClientEvent(encode({ type: 'client_event' }))).toBeNull();
-    expect(parseClientEvent(encode({ type: 'client_event', tool: 'x' }))).toBeNull();
+    expect(
+      parseClientEvent(encode({ type: 'client_event', tool: 'x' })),
+    ).toBeNull();
   });
 });

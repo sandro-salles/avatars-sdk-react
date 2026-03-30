@@ -84,8 +84,7 @@ export function AvatarCall<E extends ClientEvent = ClientEvent>({
   // During credential loading/error, show a simple loading state
   // Children are NOT rendered here because they may use hooks that require LiveKitRoom context
   if (credentialsState.status !== 'ready') {
-    const status =
-      credentialsState.status === 'error' ? 'error' : 'connecting';
+    const status = credentialsState.status === 'error' ? 'error' : 'connecting';
 
     return (
       <div
