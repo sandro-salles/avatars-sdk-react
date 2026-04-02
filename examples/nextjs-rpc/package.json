@@ -10,7 +10,7 @@
   "dependencies": {
     "@runwayml/avatars-node-rpc": "^0.1.0",
     "@runwayml/avatars-react": "latest",
-    "@runwayml/sdk": "^3.16.0",
+    "@runwayml/sdk": "^3.18.0",
     "canvas-confetti": "^1.9.4",
     "next": "^15.0.0",
     "react": "^19.0.0",

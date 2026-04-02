@@ -1,10 +1,10 @@
-interface TriviaQuestion {
+type TriviaQuestion = {
   question: string;
   options: Array<string>;
   answer: string;
   category: string;
   difficulty: 'easy' | 'medium' | 'hard';
-}
+};
 
 const QUESTIONS: Array<TriviaQuestion> = [
   {

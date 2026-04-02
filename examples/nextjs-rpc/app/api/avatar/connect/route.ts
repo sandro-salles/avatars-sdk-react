@@ -18,10 +18,10 @@ export async function POST(req: Request) {
     const { id: sessionId } = await client.realtimeSessions.create({
       model: 'gwm1_avatars',
       avatar: { type: 'custom' as const, avatarId },
-      tools: [...clientEventTools, ...backendRpcTools],
+      tools: [...clientEventTools!, ...backendRpcTools!],
       personality: TRIVIA_PERSONALITY,
       startScript: TRIVIA_START_SCRIPT,
-    } as any);
+    });
 
     const session = await pollSessionUntilReady(sessionId);
 
@@ -29,26 +29,20 @@ export async function POST(req: Request) {
       apiKey: process.env.RUNWAYML_API_SECRET!,
       sessionId,
       tools: {
-        lookup_trivia: async (args: Record<string, unknown>) => {
-          const start = Date.now();
+        async lookup_trivia(args) {
           const category = typeof args.category === 'string' ? args.category : undefined;
           const question = getRandomQuestion(category);
           emitRpcEvent({
             tool: 'lookup_trivia',
             args,
             result: question,
-            durationMs: Date.now() - start,
             time: new Date().toISOString(),
           });
           return question;
         },
       },
-      onConnected: () => console.log(`[rpc] Connected to session ${sessionId}`),
-      onDisconnected: () => {
-        console.log(`[rpc] Session ${sessionId} disconnected`);
-        activeHandlers.delete(sessionId);
-      },
-      onError: (err: Error) => console.error(`[rpc] Error:`, err.message),
+      onDisconnected: () => activeHandlers.delete(sessionId),
+      onError: (error: Error) => console.error('[rpc] Error:', error.message),
     });
 
     activeHandlers.set(sessionId, handler);

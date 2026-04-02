@@ -1,4 +1,5 @@
 import { clientTool, type ClientEventsFrom } from '@runwayml/avatars-react/api';
+import type { RealtimeSessionCreateParams } from '@runwayml/sdk/resources/realtime-sessions';
 
 export const nextStep = clientTool('next_step', {
   description:
@@ -14,11 +15,9 @@ export const nextStep = clientTool('next_step', {
   },
 });
 
-const clientToolDefs = [nextStep];
+export type TriviaEvent = ClientEventsFrom<[typeof nextStep]>;
 
-export type TriviaEvent = ClientEventsFrom<typeof clientToolDefs>;
-
-export const clientEventTools = [
+export const clientEventTools: RealtimeSessionCreateParams['tools'] = [
   {
     ...nextStep,
     parameters: [
@@ -33,9 +32,9 @@ export const clientEventTools = [
   },
 ];
 
-export const backendRpcTools = [
+export const backendRpcTools: RealtimeSessionCreateParams['tools'] = [
   {
-    type: 'backend_rpc' as const,
+    type: 'backend_rpc',
     name: 'lookup_trivia',
     description:
       'Look up a trivia question from the database. Returns a question with options and the correct answer. Call this every time you need a new question — do NOT make up your own.',

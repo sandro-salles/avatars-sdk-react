@@ -4,7 +4,7 @@ export interface RpcEvent {
   tool: string;
   args: Record<string, unknown>;
   result: unknown;
-  durationMs: number;
+  durationMs?: number;
   time: string;
 }
 
