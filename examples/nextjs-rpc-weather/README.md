@@ -14,7 +14,7 @@ An AI avatar that looks up real-time weather data using **backend RPC tool calls
 |------|-------------|
 | `get_weather` | Looks up current weather conditions (temperature, humidity, wind) for a given city |
 
-## Setup
+## Quick start
 
 ```bash
 npx degit runwayml/avatars-sdk-react/examples/nextjs-rpc-weather my-weather-app

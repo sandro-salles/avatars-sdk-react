@@ -14,9 +14,11 @@ An AI avatar hosts a trivia game. Questions, answers, scores, and sound effects 
 |------|-------------|
 | `next_step` | Advances the game — delivers the next question plus the previous answer result, updated score, and sound cue |
 
-## Setup
+## Quick start
 
 ```bash
+npx degit runwayml/avatars-sdk-react/examples/nextjs-client-events my-trivia-app
+cd my-trivia-app
 cp .env.example .env.local
 # Add your RUNWAYML_API_SECRET and NEXT_PUBLIC_AVATAR_ID
 

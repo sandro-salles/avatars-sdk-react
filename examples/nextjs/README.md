@@ -2,23 +2,15 @@
 
 This example shows how to use `@runwayml/avatars-react` with [Next.js](https://nextjs.org/) App Router.
 
-## Quick Start
+## Quick start
 
 ```bash
 npx degit runwayml/avatars-sdk-react/examples/nextjs my-avatar-app
 cd my-avatar-app
-npm install
-```
-
-Copy `.env.example` to `.env.local` and add your Runway API secret from [dev.runwayml.com](https://dev.runwayml.com/):
-
-```bash
 cp .env.example .env.local
-```
+# Add your RUNWAYML_API_SECRET from https://dev.runwayml.com/
 
-Run the dev server:
-
-```bash
+npm install
 npm run dev
 ```
 
