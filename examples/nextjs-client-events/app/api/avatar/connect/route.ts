@@ -8,21 +8,25 @@ import {
 const client = new Runway({ apiKey: process.env.RUNWAYML_API_SECRET });
 
 export async function POST(req: Request) {
-  const { avatarId } = await req.json() as { avatarId: string };
+  try {
+    const { avatarId } = await req.json() as { avatarId: string };
 
-  const { id: sessionId } = await client.realtimeSessions.create({
-    model: 'gwm1_avatars',
-    avatar: { type: 'custom' as const, avatarId },
-    // These fields require the client_event tools API feature.
-    // They're typed as `any` until the SDK ships the updated types.
-    tools: clientEventTools,
-    personality: DEFAULT_TRIVIA_PERSONALITY,
-    startScript: DEFAULT_TRIVIA_START_SCRIPT,
-  } as any);
+    const { id: sessionId } = await client.realtimeSessions.create({
+      model: 'gwm1_avatars',
+      avatar: { type: 'custom' as const, avatarId },
+      tools: clientEventTools,
+      personality: DEFAULT_TRIVIA_PERSONALITY,
+      startScript: DEFAULT_TRIVIA_START_SCRIPT,
+    });
 
-  const session = await pollSessionUntilReady(sessionId);
+    const session = await pollSessionUntilReady(sessionId);
 
-  return Response.json({ sessionId, sessionKey: session.sessionKey });
+    return Response.json({ sessionId, sessionKey: session.sessionKey });
+  } catch (error) {
+    console.error('[connect] Failed:', error);
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return Response.json({ error: message }, { status: 500 });
+  }
 }
 
 async function pollSessionUntilReady(sessionId: string) {

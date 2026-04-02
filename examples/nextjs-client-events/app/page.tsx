@@ -15,7 +15,7 @@ import '@runwayml/avatars-react/styles.css';
 import type { TriviaEvent } from '@/lib/avatar-tools';
 import { ScoreHud, QuestionCard, ResultBanner, EventLog, type EventLogEntry } from './trivia-overlay';
 
-const AVATAR_ID = '9db8d1ba-b173-428b-afd6-7b6178913596';
+const AVATAR_ID = process.env.NEXT_PUBLIC_AVATAR_ID!;
 
 const SOUNDS: Record<string, string> = {
   correct: 'https://cdn.freesound.org/previews/270/270404_5123851-lq.mp3',
@@ -37,7 +37,9 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ avatarId: AVATAR_ID }),
       });
-      setSession(await res.json());
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? `Server error ${res.status}`);
+      setSession(data);
     } catch (err) {
       console.error('Failed to connect:', err);
       setIsConnecting(false);

@@ -56,7 +56,8 @@ The styles use CSS custom properties for easy customization:
 ```
 
 See [`examples/`](./examples) for complete working examples:
-- [`nextjs`](./examples/nextjs) - Next.js App Router
+- [`nextjs-simple`](./examples/nextjs-simple) - Minimal single-avatar demo (great starting point)
+- [`nextjs`](./examples/nextjs) - Next.js App Router with preset grid and custom avatars
 - [`nextjs-client-events`](./examples/nextjs-client-events) - Client event tools (trivia game)
 - [`nextjs-rpc`](./examples/nextjs-rpc) - Backend RPC + client events (trivia with server-side questions)
 - [`nextjs-rpc-weather`](./examples/nextjs-rpc-weather) - Backend RPC only (weather assistant)
@@ -570,15 +571,42 @@ Users must grant camera and microphone permissions when prompted.
 - Your server endpoint must accept requests from your client's origin
 - For local development, ensure both client and server are on compatible origins
 
-## Agent Skill
+## Use with AI Coding Assistants
 
-This SDK includes an [Agent Skill](https://agentskills.io/) that teaches AI agents how to use the Runway Avatar SDK effectively. Install it with:
+### Agent Skills
+
+This SDK ships with [Agent Skills](https://agentskills.io/) that teach AI coding assistants how to integrate Runway avatars into your app. Install the SDK skill with:
 
 ```bash
 npx skills add runwayml/avatars-sdk-react
 ```
 
-Once installed, AI coding assistants like Claude Code, Cursor, Cline, and others will have access to SDK documentation, patterns, and best practices when helping you build avatar-powered applications.
+For the full Runway platform — video generation, image generation, audio, knowledge documents, and more:
+
+```bash
+npx skills add runwayml/skills
+```
+
+Once installed, agents like Claude Code, Cursor, Codex, Cline, and others will have access to SDK documentation, integration patterns, and best practices.
+
+### Cursor Rule
+
+Drop this into `.cursor/rules/runway-avatars.mdc` (or your project's `AGENTS.md`) to give your AI assistant context about the SDK:
+
+````markdown
+# Runway Avatar SDK
+
+When building with `@runwayml/avatars-react`:
+
+- Session creation requires a server endpoint — never expose `RUNWAYML_API_SECRET` to the client
+- Use `AvatarCall` for quick setup (handles session creation) or `AvatarSession` for full control with pre-fetched credentials
+- Preset avatars use `{ type: 'runway-preset', presetId }`, custom avatars use `{ type: 'custom', avatarId }`
+- Client events require a custom avatar with a **preset voice**; backend RPC tools work with any voice type
+- Import `clientTool` and `pageActionTools` from `@runwayml/avatars-react/api` (server-safe, no React)
+- All hooks (`useAvatarSession`, `useAvatar`, `useLocalMedia`, `useClientEvent`) must be used inside `<AvatarCall>` or `<AvatarSession>`
+- Session states flow: `idle` → `connecting` → `active` → `ending` → `ended` (or `error`)
+- See https://github.com/runwayml/avatars-sdk-react for full documentation and examples
+````
 
 ## License
 

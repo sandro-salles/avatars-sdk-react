@@ -1,5 +1,5 @@
 import Runway from '@runwayml/sdk';
-import { getPresetAvatarMetadata } from '../../../../lib/preset-avatars';
+import { getPresetAvatarMetadata } from '@/lib/preset-avatars';
 
 const client = new Runway({ apiKey: process.env.RUNWAYML_API_SECRET });
 

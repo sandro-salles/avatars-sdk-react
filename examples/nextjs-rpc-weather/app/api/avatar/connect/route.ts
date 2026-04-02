@@ -1,4 +1,5 @@
 import Runway from '@runwayml/sdk';
+import type { RealtimeSessionCreateParams } from '@runwayml/sdk/resources/realtime-sessions';
 import { createRpcHandler, type RpcHandler } from '@runwayml/avatars-node-rpc';
 import { getWeather } from '@/lib/weather-database';
 import { WEATHER_PERSONALITY, WEATHER_START_SCRIPT } from '@/lib/personality';
@@ -7,9 +8,9 @@ const client = new Runway();
 
 const activeHandlers = new Map<string, RpcHandler>();
 
-const rpcTools = [
+const rpcTools: RealtimeSessionCreateParams['tools'] = [
   {
-    type: 'backend_rpc' as const,
+    type: 'backend_rpc',
     name: 'get_weather',
     description: 'Get current weather conditions for a city. Returns temperature, conditions, humidity, wind speed, and daily high/low.',
     parameters: [
@@ -23,41 +24,27 @@ export async function POST(req: Request) {
   try {
     const { avatarId } = (await req.json()) as { avatarId: string };
 
-    const createPayload = {
+    const { id: sessionId } = await client.realtimeSessions.create({
       model: 'gwm1_avatars',
-      avatar: { type: 'custom' as const, avatarId },
+      avatar: { type: 'custom', avatarId },
       tools: rpcTools,
       personality: WEATHER_PERSONALITY,
       startScript: WEATHER_START_SCRIPT,
-    };
-    console.log('[connect] Creating session with tools:', JSON.stringify(createPayload.tools, null, 2));
-
-    const { id: sessionId } = await client.realtimeSessions.create(createPayload as any);
-    console.log('[connect] Session created:', sessionId);
+    });
 
     const session = await pollSessionUntilReady(sessionId);
-    console.log('[connect] Session ready, connecting RPC handler...');
 
     const handler = await createRpcHandler({
       apiKey: process.env.RUNWAYML_API_SECRET!,
       sessionId,
       tools: {
-        get_weather: async (args: Record<string, unknown>) => {
-          console.log('[rpc] >>> get_weather CALLED with args:', JSON.stringify(args));
-          const start = Date.now();
+        async get_weather(args) {
           const city = typeof args.city === 'string' ? args.city : 'unknown';
-          const result = getWeather(city);
-          const durationMs = Date.now() - start;
-          console.log(`[rpc] <<< get_weather returned in ${durationMs}ms:`, JSON.stringify(result));
-          return result;
+          return getWeather(city);
         },
       },
-      onConnected: () => console.log('[rpc] ✓ Handler connected to session %s — listening for tool calls', sessionId),
-      onDisconnected: () => {
-        console.log('[rpc] Handler disconnected from session', sessionId);
-        activeHandlers.delete(sessionId);
-      },
-      onError: (err: Error) => console.error('[rpc] Handler error:', err.message),
+      onDisconnected: () => activeHandlers.delete(sessionId),
+      onError: (error: Error) => console.error('[rpc] Handler error:', error.message),
     });
 
     activeHandlers.set(sessionId, handler);

@@ -4,14 +4,6 @@ import { useCallback, useEffect, useState, Suspense } from 'react';
 import { AvatarCall } from '@runwayml/avatars-react';
 import '@runwayml/avatars-react/styles.css';
 
-// To use a custom avatar, update the id to your custom avatar ID.
-// The name and imageUrl are optional — they will be fetched from the API if not provided.
-const MY_AVATAR: AvatarConfig = {
-  id: 'music-superstar',
-  // name: 'Mina',
-  // imageUrl: 'https://...',
-};
-
 interface AvatarConfig {
   id: string;
   name?: string;
@@ -22,6 +14,11 @@ interface SessionInfo {
   sessionId: string;
   sessionKey: string;
 }
+
+// To use a custom avatar, replace the id with your custom avatar ID.
+const MY_AVATAR: AvatarConfig = {
+  id: 'music-superstar',
+};
 
 export default function Home() {
   const [avatar, setAvatar] = useState<AvatarConfig>(MY_AVATAR);
