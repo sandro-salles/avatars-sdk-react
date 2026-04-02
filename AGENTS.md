@@ -61,6 +61,7 @@ AvatarCall (handles session creation)
 | `UserVideo` | Renders local camera |
 | `ControlBar` | Mic/camera/end-call buttons |
 | `ScreenShareVideo` | Renders screen share |
+| `PageActions` | Handles click/scroll/highlight events from the avatar (renders null) |
 
 ## Hooks
 
@@ -72,6 +73,7 @@ AvatarCall (handles session creation)
 | `useLocalMedia` | Local mic/camera toggles |
 | `useClientEvent` | Subscribe to a single client event type by tool name (state + callback) |
 | `useClientEvents` | Listen for all client events from the avatar |
+| `usePageActions` | Subscribes to page-action events and executes DOM click/scroll/highlight |
 | `useTranscription` | Listen for transcription segments from the session |
 
 ## Commands
@@ -97,6 +99,9 @@ bun test           # Run tests
 | Session hook | `src/hooks/useAvatarSession.ts` |
 | Avatar hook | `src/hooks/useAvatar.ts` |
 | Media hook | `src/hooks/useLocalMedia.ts` |
+| Page actions component | `src/components/PageActions.tsx` |
+| Page actions hook | `src/hooks/usePageActions.ts` |
+| Page actions tools (server) | `src/api/page-actions.ts` |
 | Server example | `examples/nextjs/app/api/avatar/connect/route.ts` |
 
 ## Design Principles
@@ -113,8 +118,9 @@ bun test           # Run tests
 - Release flow follows `CONTRIBUTING.md` — bump version, update changelog, commit, push, then `gh release create` triggers the NPM publish workflow; changelog only tracks changes that affect the npm package (not examples, tests, or docs); the publish workflow auto-detects prerelease versions (e.g. `0.10.0-beta.0`) and publishes to npm with the prerelease identifier as the dist-tag (`--tag beta`)
 - `consumeSession` converts `sessionId + sessionKey` → WebRTC credentials (`serverUrl`, `token`, `roomName`) on the client in the SDK; `@runwayml/avatars-react/api` is the server-safe entry point (no React, no `'use client'`) for Next.js API routes or server components so imports do not pull in the client bundle
 - `AvatarSession` connects `LiveKitRoom` with local `audio` and `video` off, then enables the mic and camera after the room reaches `Connected` so exclusive camera/mic use by another app (e.g. Zoom) does not block the session from becoming active; media acquisition failures surface via `MediaDeviceError` context / `useLocalMedia` with retry instead of leaving the room stuck connecting
-- Primary quickstart reference is `examples/nextjs/` (API routes, more universally understood than server actions); documentation lives on an external docs website — `docs/` and `skills/` folders were intentionally removed from the repo; screen share is demonstrated there with explicit children (`<ScreenShareVideo />` + `<ControlBar showScreenShare />`) because `showScreenShare` defaults `false` for backwards compatibility
-- Dev scripts auto-detect portless (`command -v portless`) and use it when available; there are no separate `dev:portless` scripts; VS Code launch configs (`.vscode/launch.json`) are the primary way to start example dev servers — each example's `preLaunchTask` runs `bun run build && cd examples/<name> && bun link @runwayml/avatars-react` once at launch (not watch mode); run `bun run dev` at the repo root ("Build Package (Watch)" launch config) in a separate terminal for continuous SDK rebuilds while iterating
+- Primary quickstart reference is `examples/nextjs/` (API routes, more universally understood than server actions); documentation lives on an external docs website — `docs/` and `skills/` folders were intentionally removed from the repo; screen share is enabled via `<ControlBar showScreenShare />` (defaults `false` for backwards compatibility) — the quickstart does not render `<ScreenShareVideo />` by default; the avatar stays full-size and the active button state is the sharing indicator
+- Dev scripts auto-detect portless (`command -v portless`) and use it when available; VS Code launch configs (`.vscode/launch.json`) bake SDK watch mode into every example via a background `Watch SDK` task — each example's `preLaunchTask` runs `bun run build && bun link`, then a background tsup watch starts automatically; no separate terminal needed for continuous SDK rebuilds
+- tsup CSS-only entries silently fail to emit in watch mode; the `dev` script pre-copies `src/styles.css` to `dist/` before starting tsup watch, and `rm -rf dist` cleanup only runs during `bun run build` (not during watch)
 - Graphite `gt submit` only works after the GitHub repo is added under **Synced repos** in Graphite ([settings](https://app.graphite.dev/settings/synced-repos)); otherwise it errors with “You can only submit to repos synced with Graphite” (org admins may need to enable the Graphite GitHub app for `runwayml/avatars-sdk-react`). The CLI resolves the repo from `git remote origin` — it must match that GitHub slug exactly (do not confuse the NPM package name `@runwayml/avatars-react` with the repo path `runwayml/avatars-sdk-react`, or typo `avatar-sdk-react` vs `avatars-sdk-react`). Until then, use `git push -u origin <branch>` + `gh pr create`. Local commands (`gt ls`, `gt sync`, `gt checkout`, `gt modify`, `gt create`) still work.
 - Client events are fire-and-forget messages from the avatar model delivered via LiveKit data channel (`RoomEvent.DataReceived`); exposed through `onClientEvent` prop, `useClientEvents<T>` (catch-all), and `useClientEvent<E, T>` (filtered by tool name; latest args as state + optional callback); server also sends ack messages with `args: { status: "event_sent" }` that `parseClientEvent` filters out; examples with rich UI should include a `/dev` page for testing states (question cards, score, confetti, error) without a live avatar session
 - Client tool helpers use the `client` prefix (`clientTool`, `ClientEventsFrom`, etc.) to distinguish from planned "server tools" that can call back and send messages to the model; `clientTool()` only emits `{ type, name, description }` — the `args` field is phantom (TypeScript-only, never sent to the API); when passing tools to `realtimeSessions.create({ tools })`, client event tools need explicit `parameters` arrays for the model to populate args correctly; array-type parameters require an `items` field (e.g. `{ type: 'array', items: { type: 'string' } }`) or the API returns 400; follow-up: accept Standard Schema (Zod, Valibot, ArkType) for `args` to get runtime validation and inferred types without `as` casts
