@@ -3,7 +3,7 @@ import type { RealtimeSessionCreateParams } from '@runwayml/sdk/resources/realti
 
 export const nextStep = clientTool('next_step', {
   description:
-    'Advance the trivia game. Always include the next question. After the first question, also include the result of the previous question and the updated score.',
+    'Advance the trivia game. The host reads only the question field aloud to the player; options are for on-screen UI only. Always include the next question. After the first question, also include the result of the previous question and the updated score.',
   args: {} as {
     question: string;
     options: Array<string>;
@@ -30,7 +30,8 @@ export const clientEventTools: RealtimeSessionCreateParams['tools'] = [
         name: 'options',
         type: 'array',
         items: { type: 'string' },
-        description: 'Exactly 4 multiple choice option strings',
+        description:
+          'Exactly 4 multiple choice strings for the UI only. Never read these aloud — only the question field is spoken.',
       },
       {
         name: 'questionNumber',

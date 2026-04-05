@@ -7,6 +7,7 @@ import {
 
 const client = new Runway({ apiKey: process.env.RUNWAYML_API_SECRET });
 
+/** Trivia `personality` / `startScript` and `tools` come from `lib/trivia-personality.ts` and `lib/avatar-tools.ts`. */
 export async function POST(req: Request) {
   try {
     const { avatarId } = await req.json() as { avatarId: string };
