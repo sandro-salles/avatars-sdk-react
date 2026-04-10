@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'bun:test';
-import { type ClientEventsFrom, clientTool } from './tools';
+import {
+  backendRpcTool,
+  clientTool,
+  type ClientEventsFrom,
+  toolParam,
+} from './tools';
 
 describe('clientTool', () => {
   it('returns an object with the correct server-facing fields', () => {
@@ -52,5 +57,66 @@ describe('clientTool', () => {
       args: { text: 'hi' },
     };
     expect(event.tool).toBe('show_caption');
+  });
+});
+
+describe('backendRpcTool', () => {
+  it('returns an object with the correct server-facing fields', () => {
+    const tool = backendRpcTool('get_response', {
+      description: 'Fetch the next line to speak',
+      args: {} as { speech?: string },
+      timeoutSeconds: 8,
+    });
+
+    expect(tool).toEqual({
+      type: 'backend_rpc',
+      name: 'get_response',
+      description: 'Fetch the next line to speak',
+      timeoutSeconds: 8,
+    });
+  });
+
+  it('produces a JSON-serializable object for the session create payload', () => {
+    const tool = backendRpcTool('get_response', {
+      description: 'Fetch the next line to speak',
+      args: {} as { speech?: string },
+    });
+
+    const serialized = JSON.parse(JSON.stringify(tool));
+    expect(serialized).toEqual({
+      type: 'backend_rpc',
+      name: 'get_response',
+      description: 'Fetch the next line to speak',
+    });
+  });
+});
+
+describe('toolParam', () => {
+  it('returns a typed server-facing parameter object', () => {
+    const param = toolParam('locale', {
+      type: 'string',
+      description: 'Locale for the response',
+    });
+
+    expect(param).toEqual({
+      name: 'locale',
+      type: 'string',
+      description: 'Locale for the response',
+    });
+  });
+
+  it('supports array items for array parameters', () => {
+    const param = toolParam('topics', {
+      type: 'array',
+      items: { type: 'string' },
+      description: 'Topics to cover',
+    });
+
+    expect(param).toEqual({
+      name: 'topics',
+      type: 'array',
+      items: { type: 'string' },
+      description: 'Topics to cover',
+    });
   });
 });

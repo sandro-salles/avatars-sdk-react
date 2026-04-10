@@ -26,7 +26,11 @@ describe('package exports', () => {
     expect(exports.useClientEvent).toBeDefined();
     expect(exports.useClientEvents).toBeDefined();
     expect(exports.clientTool).toBeDefined();
+    expect(exports.backendRpcTool).toBeDefined();
+    expect(exports.toolParam).toBeDefined();
     expect(typeof exports.clientTool).toBe('function');
+    expect(typeof exports.backendRpcTool).toBe('function');
+    expect(typeof exports.toolParam).toBe('function');
   });
 
   it('exports page-actions component and hook', async () => {
@@ -48,8 +52,12 @@ describe('api subpath exports', () => {
   it('exports server-safe client event utilities', async () => {
     const api = await import('./api/index');
     expect(api.clientTool).toBeDefined();
+    expect(api.backendRpcTool).toBeDefined();
+    expect(api.toolParam).toBeDefined();
     expect(api.consumeSession).toBeDefined();
     expect(typeof api.clientTool).toBe('function');
+    expect(typeof api.backendRpcTool).toBe('function');
+    expect(typeof api.toolParam).toBe('function');
   });
 
   it('exports pageActionTools from api subpath', async () => {

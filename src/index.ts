@@ -18,8 +18,14 @@ export { useLocalMedia } from './hooks/useLocalMedia';
 export type { PageActionsOptions } from './hooks/usePageActions';
 export { usePageActions } from './hooks/usePageActions';
 export { useTranscription } from './hooks/useTranscription';
-export type { ClientEventsFrom, ClientToolDef } from './tools';
-export { clientTool } from './tools';
+export type {
+  BackendRpcToolDef,
+  ClientEventsFrom,
+  ClientToolDef,
+  ToolParameterDef,
+  ToolParameterValueType,
+} from './tools';
+export { backendRpcTool, clientTool, toolParam } from './tools';
 export type {
   AvatarCallProps,
   ClientEvent,

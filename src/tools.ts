@@ -1,5 +1,24 @@
 import type { ClientEvent } from './types';
 
+export type ToolParameterValueType =
+  | 'string'
+  | 'number'
+  | 'boolean'
+  | 'array'
+  | 'object';
+
+export interface ToolParameterDef<
+  Name extends string = string,
+  Type extends ToolParameterValueType = ToolParameterValueType,
+> {
+  readonly name: Name;
+  readonly type: Type;
+  readonly description: string;
+  readonly items?: Type extends 'array'
+    ? { type: Exclude<ToolParameterValueType, 'array' | 'object'> }
+    : never;
+}
+
 /**
  * A standalone client tool definition. Composable — combine into arrays
  * and derive event types with `ClientEventsFrom`.
@@ -11,6 +30,21 @@ export interface ClientToolDef<Name extends string = string, Args = unknown> {
   readonly type: 'client_event';
   readonly name: Name;
   readonly description: string;
+  /** @internal phantom field — always `undefined` at runtime */
+  readonly _args?: Args;
+}
+
+/**
+ * A standalone backend RPC tool definition.
+ *
+ * At runtime this is just the server-facing fields. The `Args` generic
+ * is phantom and exists only for typing shared tool contracts.
+ */
+export interface BackendRpcToolDef<Name extends string = string, Args = unknown> {
+  readonly type: 'backend_rpc';
+  readonly name: Name;
+  readonly description: string;
+  readonly timeoutSeconds?: number;
   /** @internal phantom field — always `undefined` at runtime */
   readonly _args?: Args;
 }
@@ -63,4 +97,46 @@ export function clientTool<Name extends string, Args>(
     name,
     description: config.description,
   };
+}
+
+/**
+ * Define a single backend RPC tool.
+ *
+ * Returns a standalone object that can be composed into arrays and passed
+ * to `realtimeSessions.create({ tools })`.
+ */
+export function backendRpcTool<Name extends string, Args>(
+  name: Name,
+  config: { description: string; args: Args; timeoutSeconds?: number },
+): BackendRpcToolDef<Name, Args> {
+  return {
+    type: 'backend_rpc',
+    name,
+    description: config.description,
+    timeoutSeconds: config.timeoutSeconds,
+  };
+}
+
+/**
+ * Define a tool parameter in a reusable, typed form.
+ */
+export function toolParam<
+  Name extends string,
+  Type extends ToolParameterValueType,
+>(
+  name: Name,
+  config: {
+    type: Type;
+    description: string;
+    items?: Type extends 'array'
+      ? { type: Exclude<ToolParameterValueType, 'array' | 'object'> }
+      : never;
+  },
+): ToolParameterDef<Name, Type> {
+  return {
+    name,
+    type: config.type,
+    description: config.description,
+    items: config.items,
+  } as ToolParameterDef<Name, Type>;
 }

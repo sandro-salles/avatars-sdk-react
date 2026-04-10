@@ -61,6 +61,7 @@ See [`examples/`](./examples) for complete working examples:
 - [`nextjs-client-events`](./examples/nextjs-client-events) - Client event tools (trivia game)
 - [`nextjs-rpc`](./examples/nextjs-rpc) - Backend RPC + client events (trivia with server-side questions)
 - [`nextjs-rpc-weather`](./examples/nextjs-rpc-weather) - Backend RPC only (weather assistant)
+- [`nextjs-rpc-puppet`](./examples/nextjs-rpc-puppet) - Backend-controlled speech via a single `get_response` RPC tool
 - [`nextjs-server-actions`](./examples/nextjs-server-actions) - Next.js with Server Actions
 - [`react-router`](./examples/react-router) - React Router v7 framework mode
 - [`express`](./examples/express) - Express + Vite
@@ -393,6 +394,41 @@ function CaptionOverlay() {
 ```
 
 See the [`nextjs-client-events`](./examples/nextjs-client-events) example for a full working demo.
+
+## Backend RPC Tool Builders
+
+Backend RPC tools can be defined with the same lightweight style as client events. This is useful when the avatar should fetch data or even fetch the exact line it must speak from your backend.
+
+```ts
+import { backendRpcTool, toolParam } from '@runwayml/avatars-react/api';
+
+export const getResponse = backendRpcTool('get_response', {
+  description: 'Fetch the next line the avatar should speak',
+  args: {} as {
+    reason?: string;
+    lastUserMessage?: string;
+  },
+  timeoutSeconds: 8,
+});
+
+export const tools = [
+  {
+    ...getResponse,
+    parameters: [
+      toolParam('reason', {
+        type: 'string',
+        description: 'Why a response is being requested',
+      }),
+      toolParam('lastUserMessage', {
+        type: 'string',
+        description: 'Most recent user message when available',
+      }),
+    ],
+  },
+];
+```
+
+See the [`nextjs-rpc-puppet`](./examples/nextjs-rpc-puppet) example for the backend-controlled speech pattern.
 
 ## Page Actions
 

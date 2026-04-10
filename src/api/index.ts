@@ -1,5 +1,11 @@
-export type { ClientEventsFrom, ClientToolDef } from '../tools';
-export { clientTool } from '../tools';
+export type {
+  BackendRpcToolDef,
+  ClientEventsFrom,
+  ClientToolDef,
+  ToolParameterDef,
+  ToolParameterValueType,
+} from '../tools';
+export { backendRpcTool, clientTool, toolParam } from '../tools';
 export type {
   ClientEvent,
   ConsumeSessionOptions,
